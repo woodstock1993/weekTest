@@ -6,20 +6,20 @@ import com.sparta.weeklytestspring.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @RequiredArgsConstructor
 @Service
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public Article setArticle(ArticleRequestDto articleRequestDto){
-        Article article = new Article();
-        article.setContent(articleRequestDto.getContent());
-        articleRepository.save(article);
-        return article;
-    }
-
-    public Article getArticle(Long id){
-        return articleRepository.findById(id).get();
+    @Transactional
+    public Long update(Long id, ArticleRequestDto requestDto) {
+        Article article = articleRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("해당 아이디가 존재하지 않습니다.")
+        );
+        article.update(requestDto);
+        return article.getId();
     }
 }
